@@ -1,0 +1,496 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Convert Marla to Square Feet instantly. Free online Marla Kanal to Sq Ft converter tool. Accurate land measurement unit conversion for Pakistan property.">
+    <meta name="keywords" content="marla to sq ft converter, kanal to square feet, land measurement converter, marla kanal converter">
+    <meta name="author" content="ToolNest">
+    <meta property="og:title" content="Marla to Sq Ft Converter - Free Online Land Measurement Tool">
+    <meta property="og:description" content="Convert Marla, Kanal, and Square Feet instantly. 100% private client-side property measurement converter.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://property.vercel.app">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Marla Kanal to Sq Ft Converter">
+    <meta name="twitter:description" content="Fast, accurate land area conversion tool">
+    <link rel="canonical" href="https://property.vercel.app">
+    
+    <!-- Structured Data - FAQPage Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How many square feet are in 1 standard Marla?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A standard Marla equals 225 square feet in the traditional Pakistani measurement system. However, the international standard Marla is 272.25 square feet. Always verify your local standard before conversion."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between 225 sq ft and 272.25 sq ft Marla standards?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The 225 sq ft Marla is the traditional Pakistan standard used in most cities. The 272.25 sq ft Marla is the international metric-based standard. Choose the standard that matches your location's property documents."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I convert Marla to Kanal online?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Use this free converter: Enter the Marla value, select your Marla standard (225 or 272.25 sq ft), and instantly see conversions to Kanal, Square Feet, Square Meters, and other units."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- Structured Data - HowTo Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "How to Convert Marla to Square Feet",
+      "step": [
+        {
+          "@type": "HowToStep",
+          "name": "Select Your Marla Standard",
+          "text": "Choose either 225 sq ft (traditional Pakistan) or 272.25 sq ft (international standard) from the dropdown menu."
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Enter the Marla Value",
+          "text": "Type the number of Marlas you want to convert into the input field."
+        },
+        {
+          "@type": "HowToStep",
+          "name": "View Instant Results",
+          "text": "The converter automatically calculates and displays conversions in Kanal, Square Feet, Square Meters, Square Yards, and Bigha in real-time."
+        }
+      ]
+    }
+    </script>
+
+    <!-- Structured Data - SoftwareApplication Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Marla Kanal to Sq Ft Converter",
+      "applicationCategory": "UtilityApplication",
+      "description": "Free online land area measurement converter for Marla, Kanal, Square Feet, and other property units. 100% private, client-side processing.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0"
+      }
+    }
+    </script>
+
+    <title>Marla to Sq Ft Converter - Free Online Land Measurement Tool | ToolNest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .hero-text {
+            background: #f8f9ff;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 30px;
+            border-radius: 4px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-reset {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-reset:hover {
+            background: #e0e0e0;
+        }
+        
+        .results {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .results.active {
+            display: block;
+        }
+        
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
+        }
+        
+        .result-row:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .result-value {
+            color: #667eea;
+            font-weight: 700;
+        }
+        
+        .info-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        h2 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .how-to {
+            background: #f0f7ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        
+        .step {
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .step strong {
+            color: #667eea;
+        }
+        
+        .content-section {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        
+        .faq {
+            margin-top: 30px;
+        }
+        
+        .faq-item {
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            background: #f8f9ff;
+            padding: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+            user-select: none;
+            transition: background 0.3s;
+        }
+        
+        .faq-question:hover {
+            background: #eef2ff;
+        }
+        
+        .faq-answer {
+            padding: 15px;
+            background: white;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #666;
+            display: none;
+        }
+        
+        .faq-answer.active {
+            display: block;
+        }
+        
+        .privacy-badge {
+            background: #e8f5e9;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 12px;
+            color: #2e7d32;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Marla to Sq Ft Converter</h1>
+        <p class="subtitle">Free online land measurement unit conversion tool</p>
+        
+        <div class="hero-text">
+            <strong>🔒 100% Private & Secure</strong><br>
+            Convert Marla, Kanal, and Square Feet instantly. All conversions happen in your browser. No data is uploaded or stored on any server.
+        </div>
+
+        <div class="form-group">
+            <label for="marla-standard">Select Marla Standard</label>
+            <select id="marla-standard">
+                <option value="225">225 Sq Ft (Traditional Pakistan Standard)</option>
+                <option value="272.25">272.25 Sq Ft (International Standard)</option>
+                <option value="250">250 Sq Ft (Alternative Standard)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="marla-input">Enter Marla Value</label>
+            <input type="number" id="marla-input" placeholder="Enter number of Marlas" step="0.01" min="0">
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="convertMarla()">Convert Now</button>
+            <button class="btn-reset" onclick="resetConverter()">Clear All</button>
+        </div>
+
+        <div class="results" id="results">
+            <div class="result-row">
+                <span class="result-label">Square Feet (Sq Ft):</span>
+                <span class="result-value" id="sqft-result">-</span>
+            </div>
+            <div class="result-row">
+                <span class="result-label">Kanal:</span>
+                <span class="result-value" id="kanal-result">-</span>
+            </div>
+            <div class="result-row">
+                <span class="result-label">Square Meters (Sq M):</span>
+                <span class="result-value" id="sqm-result">-</span>
+            </div>
+            <div class="result-row">
+                <span class="result-label">Square Yards (Sq Yd):</span>
+                <span class="result-value" id="sqyd-result">-</span>
+            </div>
+            <div class="result-row">
+                <span class="result-label">Bigha:</span>
+                <span class="result-value" id="bigha-result">-</span>
+            </div>
+            <div class="result-row">
+                <span class="result-label">Acres:</span>
+                <span class="result-value" id="acre-result">-</span>
+            </div>
+        </div>
+
+        <div class="privacy-badge">
+            ✓ Browser-based processing | ✓ No server uploads | ✓ No account needed
+        </div>
+
+        <!-- Information Section -->
+        <div class="info-section">
+            <h2>How to Use This Tool</h2>
+            <div class="how-to">
+                <div class="step"><strong>Step 1:</strong> Select your Marla standard (225 sq ft for traditional Pakistan, 272.25 for international)</div>
+                <div class="step"><strong>Step 2:</strong> Enter the number of Marlas you want to convert in the input field</div>
+                <div class="step"><strong>Step 3:</strong> Click "Convert Now" to instantly view results in Kanal, Square Feet, Square Meters, and other units</div>
+            </div>
+
+            <h2>About Marla & Land Measurement Conversion</h2>
+            <div class="content-section">
+                <p><strong>Marla to Sq Ft Converter</strong> is a fast, private browser-based land measurement calculator designed for property buyers, sellers, and real estate professionals in Pakistan. A Marla is a traditional unit of area used extensively in Pakistani property markets, with the standard measurement being 225 square feet.</p>
+                
+                <p>This converter instantly translates Marla values into multiple international and regional land area units including Kanal (which equals 20 Marlas), Square Feet, Square Meters, Bigha, Acres, and Square Yards. The tool supports both the traditional 225 sq ft Marla standard and the international 272.25 sq ft variant, ensuring accuracy regardless of your location's measurement convention.</p>
+                
+                <p><strong>Key Features:</strong> 100% private client-side conversion (no data uploads), instant real-time calculations, support for multiple Marla standards, and straightforward unit breakdowns. Unlike online converters requiring server communication, this utility processes all conversions locally in your browser for maximum privacy and speed. Ideal for property investors, real estate agents, land surveyors, and anyone working with Pakistani property measurements.</p>
+            </div>
+
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">❓ How many square feet are in 1 standard Marla?</div>
+                    <div class="faq-answer">A standard Marla equals 225 square feet in the traditional Pakistani measurement system. However, the international standard Marla is 272.25 square feet. Always verify your local standard before making property calculations, as some regions may use the alternative 250 sq ft standard.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">❓ What is the difference between 225 sq ft and 272.25 sq ft Marla standards?</div>
+                    <div class="faq-answer">The 225 sq ft Marla is the traditional Pakistan standard used in most major cities like Karachi, Lahore, and Islamabad. The 272.25 sq ft Marla is based on metric conversion (approximately 25.29 sq meters) and is used in some international contexts. Choose the standard that matches your location's property documents to ensure accurate conversion.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">❓ How do I convert Marla to Kanal using this calculator?</div>
+                    <div class="faq-answer">Simply select your Marla standard, enter the Marla value, and click Convert. The tool instantly displays the Kanal equivalent (1 Kanal = 20 Marlas by standard conversion). This makes it easy to calculate larger land parcels measured in Kanals.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">❓ Is my land measurement data stored anywhere when using this converter?</div>
+                    <div class="faq-answer">No. This converter operates 100% in your browser with zero server connections. All conversion calculations happen locally on your device. No data is uploaded, stored, or transmitted to any external server, ensuring complete privacy for your property measurements.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">❓ Can I use this converter for commercial property calculations?</div>
+                    <div class="faq-answer">Yes, this tool works perfectly for commercial, residential, and agricultural property conversions. Simply enter your Marla value and select the appropriate standard. The instant multi-unit breakdown makes it ideal for real estate professionals handling large property portfolios.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function convertMarla() {
+            const marlaInput = parseFloat(document.getElementById('marla-input').value);
+            const marlaStandard = parseFloat(document.getElementById('marla-standard').value);
+            
+            if (!marlaInput || marlaInput <= 0) {
+                alert('Please enter a valid Marla value');
+                return;
+            }
+            
+            // Conversions
+            const sqFt = marlaInput * marlaStandard;
+            const kanal = marlaInput / 20;
+            const sqM = sqFt * 0.092903;
+            const sqYd = sqFt / 9;
+            const bigha = sqFt / 12100; // 1 Bigha ≈ 12,100 sq ft
+            const acres = sqFt / 43560;
+            
+            // Display results
+            document.getElementById('sqft-result').textContent = sqFt.toLocaleString('en-US', {maximumFractionDigits: 2});
+            document.getElementById('kanal-result').textContent = kanal.toLocaleString('en-US', {maximumFractionDigits: 4});
+            document.getElementById('sqm-result').textContent = sqM.toLocaleString('en-US', {maximumFractionDigits: 2});
+            document.getElementById('sqyd-result').textContent = sqYd.toLocaleString('en-US', {maximumFractionDigits: 2});
+            document.getElementById('bigha-result').textContent = bigha.toLocaleString('en-US', {maximumFractionDigits: 4});
+            document.getElementById('acre-result').textContent = acres.toLocaleString('en-US', {maximumFractionDigits: 4});
+            
+            document.getElementById('results').classList.add('active');
+        }
+        
+        function resetConverter() {
+            document.getElementById('marla-input').value = '';
+            document.getElementById('results').classList.remove('active');
+        }
+        
+        function toggleFAQ(element) {
+            const answer = element.nextElementSibling;
+            answer.classList.toggle('active');
+        }
+        
+        // Allow Enter key to convert
+        document.getElementById('marla-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') convertMarla();
+        });
+    </script>
+</body>
+</html>
