@@ -1,173 +1,117 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { runAudit } from "@/lib/audit-runner";
 
-import { crawlWebsite } from "@/lib/crawler";
-import { isHttpUrl } from "@/lib/url";
+type AuditRequest = {
+  url?: string;
+  maxPages?: number;
+};
 
-export const runtime = "nodejs";
-
-export const dynamic = "force-dynamic";
-
-const MAX_PAGES = 25;
-const TIMEOUT_MS = 10000;
-
-function isPrivateHostname(hostname: string): boolean {
-  const host = hostname.toLowerCase();
-
-  const blockedHosts = [
-    "localhost",
-    "localhost.localdomain",
-    "127.0.0.1",
-    "0.0.0.0",
-    "::1",
-    "[::1]",
-  ];
-
-  if (blockedHosts.includes(host)) {
-    return true;
-  }
-
-  if (host.endsWith(".local")) {
-    return true;
-  }
-
-  if (host.endsWith(".internal")) {
-    return true;
-  }
-
-  if (host.endsWith(".localhost")) {
-    return true;
-  }
-
-  return false;
-}
-
-function validateWebsiteUrl(
-  value: unknown
-): URL {
-  if (typeof value !== "string") {
-    throw new Error(
-      "Please provide a valid website URL."
-    );
-  }
-
-  const input = value.trim();
-
-  if (!input) {
-    throw new Error(
-      "Please enter a website URL."
-    );
-  }
-
-  let url: URL;
-
+function isValidHttpUrl(value: string): boolean {
   try {
-    url = new URL(
-      /^https?:\/\//i.test(input)
-        ? input
-        : `https://${input}`
+    const url = new URL(value);
+
+    return (
+      url.protocol === "http:" ||
+      url.protocol === "https:"
     );
   } catch {
-    throw new Error(
-      "The website URL is not valid."
-    );
+    return false;
   }
-
-  if (!isHttpUrl(url.toString())) {
-    throw new Error(
-      "Only HTTP and HTTPS websites are supported."
-    );
-  }
-
-  if (isPrivateHostname(url.hostname)) {
-    throw new Error(
-      "Private or local network addresses are not allowed."
-    );
-  }
-
-  url.hash = "";
-
-  return url;
 }
 
 export async function POST(
-  request: Request
+  request: NextRequest
 ) {
   try {
-    const body = await request.json();
+    const body =
+      (await request.json()) as AuditRequest;
 
-    const url = validateWebsiteUrl(
-      body?.url
-    );
+    const rawUrl =
+      typeof body.url === "string"
+        ? body.url.trim()
+        : "";
 
-    const result = await crawlWebsite(
-      url.toString(),
-      {
-        maxPages: MAX_PAGES,
-        timeoutMs: TIMEOUT_MS,
-      }
-    );
+    if (!rawUrl) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Website URL is required.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!isValidHttpUrl(rawUrl)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Please provide a valid HTTP or HTTPS website URL.",
+        },
+        { status: 400 }
+      );
+    }
+
+    const maxPages =
+      typeof body.maxPages === "number"
+        ? Math.max(
+            1,
+            Math.min(
+              Math.floor(body.maxPages),
+              100
+            )
+          )
+        : 25;
+
+    const audit =
+      await runAudit(
+        rawUrl,
+        {
+          maxPages,
+        }
+      );
 
     return NextResponse.json(
       {
         success: true,
-
-        target: {
-          url: url.toString(),
-          hostname: url.hostname,
-        },
-
-        summary: {
-          pagesScanned:
-            result.pages.length,
-
-          issuesFound:
-            result.issues.length,
-
-          highIssues:
-            result.issues.filter(
-              (issue) =>
-                issue.severity === "high"
-            ).length,
-
-          mediumIssues:
-            result.issues.filter(
-              (issue) =>
-                issue.severity === "medium"
-            ).length,
-
-          lowIssues:
-            result.issues.filter(
-              (issue) =>
-                issue.severity === "low"
-            ).length,
-        },
-
-        pages: result.pages,
-
-        issues: result.issues,
+        data: audit,
       },
-      {
-        status: 200,
-        headers: {
-          "Cache-Control":
-            "no-store, max-age=0",
-        },
-      }
+      { status: 200 }
     );
   } catch (error) {
+    console.error(
+      "Audit API error:",
+      error
+    );
+
     const message =
       error instanceof Error
         ? error.message
-        : "Website audit failed.";
+        : "";
+
+    if (
+      message.includes(
+        "cancelled"
+      )
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Website audit was cancelled.",
+        },
+        { status: 499 }
+      );
+    }
 
     return NextResponse.json(
       {
         success: false,
-        error: message,
+        error:
+          "Unable to complete the website audit. Please check the URL and try again.",
       },
-      {
-        status: 400,
-      }
+      { status: 500 }
     );
   }
 }
