@@ -1,0 +1,413 @@
+:root {
+  color-scheme: dark;
+  --background: #07111f;
+  --panel: #0d1a2b;
+  --panel-soft: #101f33;
+  --border: #20364f;
+  --text: #eef6ff;
+  --muted: #9eb1c7;
+  --accent: #75aaff;
+  --accent-dark: #081421;
+  --danger: #ff8d9a;
+  --warning: #ffd18b;
+  --success: #83e3b0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background:
+    radial-gradient(
+      circle at 15% 0%,
+      rgba(35, 83, 135, 0.42),
+      transparent 34%
+    ),
+    var(--background);
+  color: var(--text);
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.shell {
+  width: min(1280px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 44px 0 80px;
+}
+
+.hero {
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+h1 {
+  max-width: 900px;
+  margin: 0;
+  font-size: clamp(36px, 6vw, 68px);
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.subtitle {
+  max-width: 760px;
+  margin: 20px 0 0;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.audit-box {
+  margin-top: 28px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(13, 26, 43, 0.9);
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.2);
+}
+
+.audit-box label {
+  display: block;
+  margin-bottom: 9px;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.input-row {
+  display: flex;
+  gap: 10px;
+}
+
+.input-row input {
+  min-width: 0;
+  flex: 1;
+  padding: 14px 15px;
+  border: 1px solid #2a4562;
+  border-radius: 12px;
+  outline: none;
+  background: #081421;
+  color: var(--text);
+}
+
+.input-row input:focus {
+  border-color: var(--accent);
+}
+
+.input-row button {
+  min-height: 48px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--accent);
+  color: var(--accent-dark);
+  font-weight: 850;
+}
+
+.input-row button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.privacy-note {
+  margin: 11px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.status-box,
+.error-box,
+.panel,
+.stat-card {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(13, 26, 43, 0.9);
+}
+
+.status-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  margin: 18px 0;
+}
+
+.status-box strong {
+  display: block;
+}
+
+.status-box p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.loader {
+  width: 22px;
+  height: 22px;
+  border: 3px solid #29445f;
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-box {
+  margin: 18px 0;
+  padding: 16px;
+  border-color: #6c3440;
+  background: #351a22;
+}
+
+.error-box strong {
+  color: var(--danger);
+}
+
+.error-box p {
+  margin: 6px 0 0;
+  color: #ffc4cb;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.stat-card {
+  padding: 17px;
+}
+
+.stat-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.stat-card strong {
+  display: block;
+  margin-top: 7px;
+  font-size: 25px;
+}
+
+.panel {
+  margin-top: 18px;
+  padding: 22px;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.panel h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.panel-header p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.verified {
+  padding: 7px 11px;
+  border: 1px solid #2b6047;
+  border-radius: 999px;
+  color: var(--success);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.issues-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.issue {
+  display: flex;
+  gap: 13px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--panel-soft);
+}
+
+.issue-content {
+  min-width: 0;
+}
+
+.issue-content strong {
+  display: block;
+}
+
+.issue-content p {
+  margin: 5px 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.issue-content code {
+  display: block;
+  color: #8fa8c2;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.severity {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 74px;
+  height: 25px;
+  flex: 0 0 74px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.severity.critical {
+  background: #55232c;
+  color: #ffb5be;
+}
+
+.severity.high {
+  background: #51371f;
+  color: var(--warning);
+}
+
+.severity.medium {
+  background: #403b20;
+  color: #f1df8d;
+}
+
+.severity.low {
+  background: #26384d;
+  color: #b9c9dc;
+}
+
+.success-box {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid #2b6047;
+  border-radius: 12px;
+  color: var(--success);
+  background: rgba(25, 74, 53, 0.18);
+}
+
+.scope-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.scope-item {
+  padding: 15px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel-soft);
+}
+
+.scope-item span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.scope-item strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 22px;
+}
+
+@media (max-width: 1000px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .scope-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .shell {
+    width: min(100% - 24px, 1280px);
+    padding-top: 28px;
+  }
+
+  h1 {
+    font-size: 38px;
+  }
+
+  .input-row {
+    flex-direction: column;
+  }
+
+  .input-row button {
+    width: 100%;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .scope-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .panel-header {
+    flex-direction: column;
+  }
+
+  .issue {
+    flex-direction: column;
+  }
+
+  .severity {
+    width: max-content;
+    padding: 0 10px;
+  }
+}
