@@ -3,20 +3,24 @@
 import { useState } from "react";
 
 type AuditResponse = {
-  domain: string;
-  pagesScanned: number;
-  summary: {
-    score: number;
-    critical: number;
-    high: number;
-    medium: number;
-    low: number;
-    brokenLinks: number;
-    redirects: number;
-    missingTitles: number;
-    missingDescriptions: number;
-    missingH1: number;
-  };
+  pages: Array<{
+    page: {
+      url: string;
+      finalUrl: string;
+      status: number | null;
+      contentType: string;
+      title: string;
+      metaDescription: string;
+      h1Count: number;
+      canonical: string;
+      robots: string;
+      wordCount: number;
+      internalLinks: number;
+      externalLinks: number;
+      depth: number;
+      error?: string;
+    };
+  }>;
   issues: Array<{
     severity: string;
     code: string;
@@ -24,41 +28,108 @@ type AuditResponse = {
     detail: string;
     url?: string;
   }>;
+  summary: {
+    pagesScanned: number;
+    successfulPages: number;
+    failedPages: number;
+    healthScore: number;
+
+    criticalIssues: number;
+    highIssues: number;
+    mediumIssues: number;
+    lowIssues: number;
+
+    totalInternalLinks: number;
+    totalExternalLinks: number;
+    totalWords: number;
+
+    pagesWithMissingTitle: number;
+    pagesWithMissingDescription: number;
+    pagesWithMissingH1: number;
+    pagesWithMissingCanonical: number;
+    pagesWithNoindex: number;
+    pagesWithMissingAlt: number;
+  };
+  startedAt: string;
+  completedAt: string;
+};
+
+type ApiResponse = {
+  success: boolean;
+  data?: AuditResponse;
+  error?: string;
 };
 
 export default function AuditDashboard() {
   const [domain, setDomain] = useState("");
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<AuditResponse | null>(null);
+  const [result, setResult] =
+    useState<AuditResponse | null>(null);
   const [error, setError] = useState("");
 
+  function normalizeInputUrl(value: string): string {
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      return "";
+    }
+
+    if (
+      trimmed.startsWith("http://") ||
+      trimmed.startsWith("https://")
+    ) {
+      return trimmed;
+    }
+
+    return `https://${trimmed}`;
+  }
+
   async function runAudit() {
-    if (!domain.trim()) return;
+    const rawUrl = domain.trim();
+
+    if (!rawUrl) {
+      setError("Website URL is required.");
+      return;
+    }
+
+    const url = normalizeInputUrl(rawUrl);
 
     setLoading(true);
     setError("");
     setResult(null);
 
     try {
-      const response = await fetch("/api/audit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          domain: domain.trim()
-        })
-      });
+      const response = await fetch(
+        "/api/audit",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            url,
+            maxPages: 25,
+          }),
+        }
+      );
 
-      const data = await response.json();
+      const data =
+        (await response.json()) as ApiResponse;
 
-      if (!response.ok) {
+      if (!response.ok || !data.success) {
         throw new Error(
-          data?.error || "Website audit could not be completed."
+          data.error ||
+            "Website audit could not be completed."
         );
       }
 
-      setResult(data);
+      if (!data.data) {
+        throw new Error(
+          "Audit completed but no audit data was returned."
+        );
+      }
+
+      setResult(data.data);
     } catch (err) {
       setError(
         err instanceof Error
@@ -77,11 +148,14 @@ export default function AuditDashboard() {
           TOOLNEST · PRIVATE WEBSITE INTELLIGENCE
         </p>
 
-        <h1>Website Intelligence Command Center</h1>
+        <h1>
+          Website Intelligence Command Center
+        </h1>
 
         <p className="subtitle">
-          Technical website crawling, SEO health analysis and verified
-          website intelligence in one private workspace.
+          Technical website crawling, SEO health
+          analysis and verified website intelligence
+          in one private workspace.
         </p>
 
         <div className="audit-box">
@@ -94,29 +168,41 @@ export default function AuditDashboard() {
               id="domain"
               type="text"
               value={domain}
-              onChange={(event) => setDomain(event.target.value)}
+              onChange={(event) =>
+                setDomain(event.target.value)
+              }
               onKeyDown={(event) => {
-                if (event.key === "Enter") {
+                if (
+                  event.key === "Enter" &&
+                  !loading
+                ) {
                   runAudit();
                 }
               }}
-              placeholder="example.com"
+              placeholder="https://example.com"
               autoComplete="url"
+              disabled={loading}
             />
 
             <button
               type="button"
               onClick={runAudit}
-              disabled={loading || !domain.trim()}
+              disabled={
+                loading ||
+                !domain.trim()
+              }
             >
-              {loading ? "Auditing..." : "Run Website Audit"}
+              {loading
+                ? "Auditing..."
+                : "Run Website Audit"}
             </button>
           </div>
 
           <p className="privacy-note">
-            Current audit uses direct website crawl data.
-            External traffic, rankings, backlinks and analytics
-            will only be displayed after verified integrations are
+            Current audit uses direct website crawl
+            data. External traffic, rankings,
+            backlinks and analytics will only be
+            displayed after verified integrations are
             connected.
           </p>
         </div>
@@ -125,10 +211,15 @@ export default function AuditDashboard() {
       {loading && (
         <section className="status-box">
           <div className="loader" />
+
           <div>
-            <strong>Analyzing website...</strong>
+            <strong>
+              Analyzing website...
+            </strong>
+
             <p>
-              Crawling pages and checking technical website signals.
+              Crawling pages and checking technical
+              website signals.
             </p>
           </div>
         </section>
@@ -136,7 +227,10 @@ export default function AuditDashboard() {
 
       {error && (
         <section className="error-box">
-          <strong>Audit failed</strong>
+          <strong>
+            Audit failed
+          </strong>
+
           <p>{error}</p>
         </section>
       )}
@@ -146,40 +240,57 @@ export default function AuditDashboard() {
           <section className="stats-grid">
             <StatCard
               label="Health Score"
-              value={`${result.summary.score}/100`}
+              value={`${result.summary.healthScore}/100`}
             />
 
             <StatCard
               label="Pages Scanned"
-              value={String(result.pagesScanned)}
+              value={String(
+                result.summary.pagesScanned
+              )}
+            />
+
+            <StatCard
+              label="Successful Pages"
+              value={String(
+                result.summary.successfulPages
+              )}
+            />
+
+            <StatCard
+              label="Failed Pages"
+              value={String(
+                result.summary.failedPages
+              )}
             />
 
             <StatCard
               label="Critical"
-              value={String(result.summary.critical)}
+              value={String(
+                result.summary.criticalIssues
+              )}
             />
 
             <StatCard
               label="High"
-              value={String(result.summary.high)}
-            />
-
-            <StatCard
-              label="Broken / Errors"
-              value={String(result.summary.brokenLinks)}
-            />
-
-            <StatCard
-              label="Redirects"
-              value={String(result.summary.redirects)}
+              value={String(
+                result.summary.highIssues
+              )}
             />
           </section>
 
           <section className="panel">
             <div className="panel-header">
               <div>
-                <h2>Audit Findings</h2>
-                <p>{result.domain}</p>
+                <h2>
+                  Audit Findings
+                </h2>
+
+                <p>
+                  {result.pages[0]?.page.finalUrl ||
+                    result.pages[0]?.page.url ||
+                    "Website audit"}
+                </p>
               </div>
 
               <span className="verified">
@@ -189,64 +300,132 @@ export default function AuditDashboard() {
 
             {result.issues.length === 0 ? (
               <div className="success-box">
-                No technical issues were detected within the current
-                crawl scope.
+                No technical issues were detected
+                within the current crawl scope.
               </div>
             ) : (
               <div className="issues-list">
-                {result.issues.slice(0, 100).map((issue, index) => (
-                  <article
-                    className="issue"
-                    key={`${issue.code}-${issue.url}-${index}`}
-                  >
-                    <span
-                      className={`severity ${issue.severity}`}
+                {result.issues
+                  .slice(0, 100)
+                  .map((issue, index) => (
+                    <article
+                      className="issue"
+                      key={`${issue.code}-${issue.url}-${index}`}
                     >
-                      {issue.severity}
-                    </span>
+                      <span
+                        className={`severity ${issue.severity}`}
+                      >
+                        {issue.severity}
+                      </span>
 
-                    <div className="issue-content">
-                      <strong>{issue.title}</strong>
+                      <div className="issue-content">
+                        <strong>
+                          {issue.title}
+                        </strong>
 
-                      <p>{issue.detail}</p>
+                        <p>
+                          {issue.detail}
+                        </p>
 
-                      {issue.url && (
-                        <code>{issue.url}</code>
-                      )}
-                    </div>
-                  </article>
-                ))}
+                        {issue.url && (
+                          <code>
+                            {issue.url}
+                          </code>
+                        )}
+                      </div>
+                    </article>
+                  ))}
               </div>
             )}
           </section>
 
           <section className="panel">
-            <h2>Current Audit Scope</h2>
+            <h2>
+              Current Audit Scope
+            </h2>
 
             <div className="scope-grid">
               <ScopeItem
                 label="Missing Titles"
-                value={result.summary.missingTitles}
+                value={
+                  result.summary
+                    .pagesWithMissingTitle
+                }
               />
 
               <ScopeItem
                 label="Missing Descriptions"
-                value={result.summary.missingDescriptions}
+                value={
+                  result.summary
+                    .pagesWithMissingDescription
+                }
               />
 
               <ScopeItem
                 label="Missing H1"
-                value={result.summary.missingH1}
+                value={
+                  result.summary
+                    .pagesWithMissingH1
+                }
+              />
+
+              <ScopeItem
+                label="Missing Canonical"
+                value={
+                  result.summary
+                    .pagesWithMissingCanonical
+                }
+              />
+
+              <ScopeItem
+                label="Noindex Pages"
+                value={
+                  result.summary
+                    .pagesWithNoindex
+                }
+              />
+
+              <ScopeItem
+                label="Missing Image Alt"
+                value={
+                  result.summary
+                    .pagesWithMissingAlt
+                }
               />
 
               <ScopeItem
                 label="Medium Issues"
-                value={result.summary.medium}
+                value={
+                  result.summary.mediumIssues
+                }
               />
 
               <ScopeItem
                 label="Low Issues"
-                value={result.summary.low}
+                value={
+                  result.summary.lowIssues
+                }
+              />
+
+              <ScopeItem
+                label="Internal Links"
+                value={
+                  result.summary.totalInternalLinks
+                }
+              />
+
+              <ScopeItem
+                label="External Links"
+                value={
+                  result.summary.totalExternalLinks
+                }
+              />
+
+              <ScopeItem
+                label="Total Words"
+                value={
+                  result.summary.totalWords
+                }
               />
             </div>
           </section>
@@ -258,7 +437,7 @@ export default function AuditDashboard() {
 
 function StatCard({
   label,
-  value
+  value,
 }: {
   label: string;
   value: string;
@@ -266,6 +445,7 @@ function StatCard({
   return (
     <div className="stat-card">
       <span>{label}</span>
+
       <strong>{value}</strong>
     </div>
   );
@@ -273,7 +453,7 @@ function StatCard({
 
 function ScopeItem({
   label,
-  value
+  value,
 }: {
   label: string;
   value: number;
@@ -281,6 +461,7 @@ function ScopeItem({
   return (
     <div className="scope-item">
       <span>{label}</span>
+
       <strong>{value}</strong>
     </div>
   );
