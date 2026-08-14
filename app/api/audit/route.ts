@@ -3,6 +3,7 @@ import { runAudit } from "@/lib/audit-runner";
 
 type AuditRequest = {
   url?: string;
+  domain?: string;
   maxPages?: number;
 };
 
@@ -26,21 +27,37 @@ export async function POST(
     const body =
       (await request.json()) as AuditRequest;
 
-    const rawUrl =
+    /*
+     * Support both:
+     * { url: "..." }
+     * and
+     * { domain: "..." }
+     */
+    const rawInput =
       typeof body.url === "string"
         ? body.url.trim()
-        : "";
+        : typeof body.domain === "string"
+          ? body.domain.trim()
+          : "";
 
-    if (!rawUrl) {
+    if (!rawInput) {
       return NextResponse.json(
         {
           success: false,
-          error:
-            "Website URL is required.",
+          error: "Website URL is required.",
         },
         { status: 400 }
       );
     }
+
+    /*
+     * Automatically add https://
+     * when the user enters only a domain.
+     */
+    const rawUrl =
+      /^https?:\/\//i.test(rawInput)
+        ? rawInput
+        : `https://${rawInput}`;
 
     if (!isValidHttpUrl(rawUrl)) {
       return NextResponse.json(
@@ -54,15 +71,15 @@ export async function POST(
     }
 
     const maxPages =
-  typeof body.maxPages === "number"
-    ? Math.max(
-        1,
-        Math.min(
-          Math.floor(body.maxPages),
-          150
-        )
-      )
-    : 150;
+      typeof body.maxPages === "number"
+        ? Math.max(
+            1,
+            Math.min(
+              Math.floor(body.maxPages),
+              150
+            )
+          )
+        : 150;
 
     const audit =
       await runAudit(
@@ -91,9 +108,9 @@ export async function POST(
         : "";
 
     if (
-      message.includes(
-        "cancelled"
-      )
+      message
+        .toLowerCase()
+        .includes("cancelled")
     ) {
       return NextResponse.json(
         {
