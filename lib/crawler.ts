@@ -35,10 +35,22 @@ function decodeHtml(value: string): string {
 function stripHtml(html: string): string {
   return decodeHtml(
     html
-      .replace(/<script[\s\S]*?<\/script>/gi, " ")
-      .replace(/<style[\s\S]*?<\/style>/gi, " ")
-      .replace(/<noscript[\s\S]*?<\/noscript>/gi, " ")
-      .replace(/<svg[\s\S]*?<\/svg>/gi, " ")
+      .replace(
+        /<script[\s\S]*?<\/script>/gi,
+        " "
+      )
+      .replace(
+        /<style[\s\S]*?<\/style>/gi,
+        " "
+      )
+      .replace(
+        /<noscript[\s\S]*?<\/noscript>/gi,
+        " "
+      )
+      .replace(
+        /<svg[\s\S]*?<\/svg>/gi,
+        " "
+      )
       .replace(/<[^>]+>/g, " ")
       .replace(/\s+/g, " ")
       .trim()
@@ -71,7 +83,9 @@ function extractMetaDescription(
   );
 
   if (match?.[1]) {
-    return decodeHtml(match[1].trim());
+    return decodeHtml(
+      match[1].trim()
+    );
   }
 
   const reversed = html.match(
@@ -79,7 +93,9 @@ function extractMetaDescription(
   );
 
   return reversed?.[1]
-    ? decodeHtml(reversed[1].trim())
+    ? decodeHtml(
+        reversed[1].trim()
+      )
     : "";
 }
 
@@ -91,7 +107,9 @@ function extractCanonical(
   );
 
   if (match?.[1]) {
-    return decodeHtml(match[1].trim());
+    return decodeHtml(
+      match[1].trim()
+    );
   }
 
   const reversed = html.match(
@@ -99,7 +117,9 @@ function extractCanonical(
   );
 
   return reversed?.[1]
-    ? decodeHtml(reversed[1].trim())
+    ? decodeHtml(
+        reversed[1].trim()
+      )
     : "";
 }
 
@@ -111,7 +131,9 @@ function extractRobots(
   );
 
   if (match?.[1]) {
-    return decodeHtml(match[1].trim());
+    return decodeHtml(
+      match[1].trim()
+    );
   }
 
   const reversed = html.match(
@@ -119,16 +141,19 @@ function extractRobots(
   );
 
   return reversed?.[1]
-    ? decodeHtml(reversed[1].trim())
+    ? decodeHtml(
+        reversed[1].trim()
+      )
     : "";
 }
 
 function extractH1Count(
   html: string
 ): number {
-  const matches = html.match(
-    /<h1\b[^>]*>/gi
-  );
+  const matches =
+    html.match(
+      /<h1\b[^>]*>/gi
+    );
 
   return matches?.length ?? 0;
 }
@@ -137,7 +162,8 @@ function extractLinks(
   html: string,
   baseUrl: URL
 ): string[] {
-  const links = new Set<string>();
+  const links =
+    new Set<string>();
 
   const regex =
     /<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>/gi;
@@ -147,7 +173,8 @@ function extractLinks(
   while (
     (match = regex.exec(html)) !== null
   ) {
-    const href = match[1]?.trim();
+    const href =
+      match[1]?.trim();
 
     if (!href) {
       continue;
@@ -163,13 +190,16 @@ function extractLinks(
     }
 
     try {
-      const url = new URL(
-        href,
-        baseUrl
-      );
+      const url =
+        new URL(
+          href,
+          baseUrl
+        );
 
       if (
-        !isHttpUrl(url.toString())
+        !isHttpUrl(
+          url.toString()
+        )
       ) {
         continue;
       }
@@ -178,29 +208,35 @@ function extractLinks(
       url.search = "";
 
       links.add(
-        normalizeUrl(url.toString())
+        normalizeUrl(
+          url.toString()
+        )
       );
     } catch {
       // Ignore malformed links.
     }
   }
 
-  return [...links];
+  return [
+    ...links,
+  ];
 }
 
 function getDepth(
   root: URL,
   current: URL
 ): number {
-  const rootPath = root.pathname
-    .replace(/\/+$/, "")
-    .split("/")
-    .filter(Boolean);
+  const rootPath =
+    root.pathname
+      .replace(/\/+$/, "")
+      .split("/")
+      .filter(Boolean);
 
-  const currentPath = current.pathname
-    .replace(/\/+$/, "")
-    .split("/")
-    .filter(Boolean);
+  const currentPath =
+    current.pathname
+      .replace(/\/+$/, "")
+      .split("/")
+      .filter(Boolean);
 
   return Math.max(
     0,
@@ -219,20 +255,18 @@ async function fetchPage(
   const controller =
     new AbortController();
 
-  const timeout = setTimeout(
-    () => {
+  const timeout =
+    setTimeout(() => {
       controller.abort();
-    },
-    timeoutMs
-  );
+    }, timeoutMs);
 
   try {
-    const response = await fetch(
-      url,
-      {
+    const response =
+      await fetch(url, {
         method: "GET",
         redirect: "follow",
-        signal: controller.signal,
+        signal:
+          controller.signal,
         headers: {
           "User-Agent":
             "ToolNest-Website-Intelligence/1.0",
@@ -240,38 +274,41 @@ async function fetchPage(
             "text/html,application/xhtml+xml",
         },
         cache: "no-store",
-      }
-    );
+      });
 
     const contentType =
       response.headers.get(
         "content-type"
       ) ?? "";
 
+    const finalUrl =
+      response.url || url;
+
     if (
       !contentType
         .toLowerCase()
-        .includes("text/html")
+        .includes("text/html") &&
+      !contentType
+        .toLowerCase()
+        .includes(
+          "application/xhtml+xml"
+        )
     ) {
       return {
         page: {
           url,
-          status: response.status,
-          finalUrl:
-            response.url || url,
+          status:
+            response.status,
+          finalUrl,
           contentType,
-
           title: "",
           metaDescription: "",
           h1Count: 0,
           canonical: "",
           robots: "",
-
           wordCount: 0,
-
           internalLinks: 0,
           externalLinks: 0,
-
           depth: 0,
         },
         links: [],
@@ -284,14 +321,13 @@ async function fetchPage(
     const requestedUrl =
       new URL(url);
 
-    const finalUrl = new URL(
-      response.url || url
-    );
+    const finalUrlObject =
+      new URL(finalUrl);
 
     const allLinks =
       extractLinks(
         html,
-        finalUrl
+        finalUrlObject
       );
 
     const internalLinks =
@@ -321,8 +357,7 @@ async function fetchPage(
       status:
         response.status,
 
-      finalUrl:
-        response.url || url,
+      finalUrl,
 
       contentType,
 
@@ -338,21 +373,26 @@ async function fetchPage(
         ),
 
       h1Count:
-        extractH1Count(html),
+        extractH1Count(
+          html
+        ),
 
       canonical:
-        extractCanonical(html),
+        extractCanonical(
+          html
+        ),
 
       robots:
-        extractRobots(html),
+        extractRobots(
+          html
+        ),
 
-      wordCount:
-        text
-          ? text
-              .split(/\s+/)
-              .filter(Boolean)
-              .length
-          : 0,
+      wordCount: text
+        ? text
+            .split(/\s+/)
+            .filter(Boolean)
+            .length
+        : 0,
 
       internalLinks:
         internalLinks.length,
@@ -375,23 +415,25 @@ export async function crawlWebsite(
   startUrl: string,
   options: CrawlOptions = {}
 ): Promise<CrawlResult> {
-  const maxPages = Math.max(
-    1,
-    Math.min(
-      options.maxPages ??
-        DEFAULT_MAX_PAGES,
-      100
-    )
-  );
+  const maxPages =
+    Math.max(
+      1,
+      Math.min(
+        options.maxPages ??
+          DEFAULT_MAX_PAGES,
+        100
+      )
+    );
 
-  const timeoutMs = Math.max(
-    3000,
-    Math.min(
-      options.timeoutMs ??
-        DEFAULT_TIMEOUT,
-      30000
-    )
-  );
+  const timeoutMs =
+    Math.max(
+      3000,
+      Math.min(
+        options.timeoutMs ??
+          DEFAULT_TIMEOUT,
+        30000
+      )
+    );
 
   const rootUrl =
     new URL(startUrl);
@@ -405,9 +447,11 @@ export async function crawlWebsite(
   const visited =
     new Set<string>();
 
-  const pages: PageAudit[] = [];
+  const pages: PageAudit[] =
+    [];
 
-  const issues: AuditIssue[] = [];
+  const issues: AuditIssue[] =
+    [];
 
   while (
     queue.length > 0 &&
@@ -421,18 +465,24 @@ export async function crawlWebsite(
     }
 
     if (
-      visited.has(currentUrl)
+      visited.has(
+        currentUrl
+      )
     ) {
       continue;
     }
 
-    visited.add(currentUrl);
+    visited.add(
+      currentUrl
+    );
 
     let parsedUrl: URL;
 
     try {
       parsedUrl =
-        new URL(currentUrl);
+        new URL(
+          currentUrl
+        );
     } catch {
       continue;
     }
@@ -464,7 +514,7 @@ export async function crawlWebsite(
       );
 
       /*
-       * HTTP ERROR
+       * HTTP error
        */
       if (
         result.page.status !==
@@ -473,42 +523,34 @@ export async function crawlWebsite(
       ) {
         issues.push({
           severity: "high",
-
           code: "HTTP_ERROR",
-
           title:
             "HTTP error detected",
-
           detail:
             `The page returned HTTP status ${result.page.status}.`,
-
           url: currentUrl,
         });
       }
 
       /*
-       * MISSING TITLE
+       * Missing title
        */
       if (
         !result.page.title
       ) {
         issues.push({
           severity: "medium",
-
           code: "MISSING_TITLE",
-
           title:
             "Missing page title",
-
           detail:
             "This page does not contain a usable HTML title.",
-
           url: currentUrl,
         });
       }
 
       /*
-       * MISSING META DESCRIPTION
+       * Missing meta description
        */
       if (
         !result.page
@@ -516,89 +558,35 @@ export async function crawlWebsite(
       ) {
         issues.push({
           severity: "low",
-
           code:
             "MISSING_META_DESCRIPTION",
-
           title:
             "Missing meta description",
-
           detail:
             "This page does not contain a meta description.",
-
           url: currentUrl,
         });
       }
 
       /*
-       * MISSING H1
+       * Missing H1
        */
       if (
         result.page.h1Count === 0
       ) {
         issues.push({
           severity: "medium",
-
           code: "MISSING_H1",
-
           title:
             "Missing H1 heading",
-
           detail:
             "This page does not contain an H1 heading.",
-
           url: currentUrl,
         });
       }
 
       /*
-       * MISSING CANONICAL
-       */
-      if (
-        !result.page.canonical
-      ) {
-        issues.push({
-          severity: "low",
-
-          code:
-            "MISSING_CANONICAL",
-
-          title:
-            "Missing canonical URL",
-
-          detail:
-            "This page does not contain a canonical URL.",
-
-          url: currentUrl,
-        });
-      }
-
-      /*
-       * NOINDEX
-       */
-      if (
-        result.page.robots
-          .toLowerCase()
-          .includes("noindex")
-      ) {
-        issues.push({
-          severity: "medium",
-
-          code:
-            "NOINDEX_DETECTED",
-
-          title:
-            "Noindex directive detected",
-
-          detail:
-            "This page contains a robots noindex directive.",
-
-          url: currentUrl,
-        });
-      }
-
-      /*
-       * INTERNAL LINKS
+       * Add internal links to queue
        */
       for (
         const link of result.links
@@ -662,8 +650,7 @@ export async function crawlWebsite(
             parsedUrl
           ),
 
-        error:
-          message,
+        error: message,
       });
 
       issues.push({
