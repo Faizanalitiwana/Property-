@@ -63,7 +63,9 @@ function extractTag(
   return stripHtml(match[1]);
 }
 
-function extractMetaDescription(html: string): string {
+function extractMetaDescription(
+  html: string
+): string {
   const match = html.match(
     /<meta\b[^>]*\bname=["']description["'][^>]*\bcontent=["']([^"']*)["'][^>]*>/i
   );
@@ -81,7 +83,9 @@ function extractMetaDescription(html: string): string {
     : "";
 }
 
-function extractCanonical(html: string): string {
+function extractCanonical(
+  html: string
+): string {
   const match = html.match(
     /<link\b[^>]*\brel=["']canonical["'][^>]*\bhref=["']([^"']+)["'][^>]*>/i
   );
@@ -99,7 +103,9 @@ function extractCanonical(html: string): string {
     : "";
 }
 
-function extractRobots(html: string): string {
+function extractRobots(
+  html: string
+): string {
   const match = html.match(
     /<meta\b[^>]*\bname=["']robots["'][^>]*\bcontent=["']([^"']*)["'][^>]*>/i
   );
@@ -108,11 +114,21 @@ function extractRobots(html: string): string {
     return decodeHtml(match[1].trim());
   }
 
-  return "";
+  const reversed = html.match(
+    /<meta\b[^>]*\bcontent=["']([^"']*)["'][^>]*\bname=["']robots["'][^>]*>/i
+  );
+
+  return reversed?.[1]
+    ? decodeHtml(reversed[1].trim())
+    : "";
 }
 
-function extractH1Count(html: string): number {
-  const matches = html.match(/<h1\b[^>]*>/gi);
+function extractH1Count(
+  html: string
+): number {
+  const matches = html.match(
+    /<h1\b[^>]*>/gi
+  );
 
   return matches?.length ?? 0;
 }
@@ -128,7 +144,9 @@ function extractLinks(
 
   let match: RegExpExecArray | null;
 
-  while ((match = regex.exec(html)) !== null) {
+  while (
+    (match = regex.exec(html)) !== null
+  ) {
     const href = match[1]?.trim();
 
     if (!href) {
@@ -145,16 +163,23 @@ function extractLinks(
     }
 
     try {
-      const url = new URL(href, baseUrl);
+      const url = new URL(
+        href,
+        baseUrl
+      );
 
-      if (!isHttpUrl(url.toString())) {
+      if (
+        !isHttpUrl(url.toString())
+      ) {
         continue;
       }
 
       url.hash = "";
       url.search = "";
 
-      links.add(normalizeUrl(url.toString()));
+      links.add(
+        normalizeUrl(url.toString())
+      );
     } catch {
       // Ignore malformed links.
     }
@@ -179,7 +204,8 @@ function getDepth(
 
   return Math.max(
     0,
-    currentPath.length - rootPath.length
+    currentPath.length -
+      rootPath.length
   );
 }
 
@@ -190,26 +216,37 @@ async function fetchPage(
   page: PageAudit;
   links: string[];
 }> {
-  const controller = new AbortController();
+  const controller =
+    new AbortController();
 
-  const timeout = setTimeout(() => {
-    controller.abort();
-  }, timeoutMs);
+  const timeout = setTimeout(
+    () => {
+      controller.abort();
+    },
+    timeoutMs
+  );
 
   try {
-    const response = await fetch(url, {
-      method: "GET",
-      redirect: "follow",
-      signal: controller.signal,
-      headers: {
-        "User-Agent":
-          "ToolNest-Website-Intelligence/1.0"
-      },
-      cache: "no-store",
-    });
+    const response = await fetch(
+      url,
+      {
+        method: "GET",
+        redirect: "follow",
+        signal: controller.signal,
+        headers: {
+          "User-Agent":
+            "ToolNest-Website-Intelligence/1.0",
+          Accept:
+            "text/html,application/xhtml+xml",
+        },
+        cache: "no-store",
+      }
+    );
 
     const contentType =
-      response.headers.get("content-type") ?? "";
+      response.headers.get(
+        "content-type"
+      ) ?? "";
 
     if (
       !contentType
@@ -220,75 +257,105 @@ async function fetchPage(
         page: {
           url,
           status: response.status,
-          finalUrl: response.url || url,
+          finalUrl:
+            response.url || url,
           contentType,
+
           title: "",
           metaDescription: "",
           h1Count: 0,
           canonical: "",
           robots: "",
+
           wordCount: 0,
+
           internalLinks: 0,
           externalLinks: 0,
+
           depth: 0,
         },
         links: [],
       };
     }
 
-    const html = await response.text();
+    const html =
+      await response.text();
 
-    const requestedUrl = new URL(url);
+    const requestedUrl =
+      new URL(url);
+
     const finalUrl = new URL(
       response.url || url
     );
 
-    const allLinks = extractLinks(
-      html,
-      finalUrl
-    );
+    const allLinks =
+      extractLinks(
+        html,
+        finalUrl
+      );
 
-    const internalLinks = allLinks.filter(
-      (link) => {
-        try {
-          return sameOrigin(
-            requestedUrl,
-            new URL(link)
-          );
-        } catch {
-          return false;
+    const internalLinks =
+      allLinks.filter(
+        (link) => {
+          try {
+            return sameOrigin(
+              requestedUrl,
+              new URL(link)
+            );
+          } catch {
+            return false;
+          }
         }
-      }
-    );
+      );
 
     const externalLinks =
       allLinks.length -
       internalLinks.length;
 
-    const text = stripHtml(html);
+    const text =
+      stripHtml(html);
 
     const page: PageAudit = {
       url,
-      status: response.status,
-      finalUrl: response.url || url,
+
+      status:
+        response.status,
+
+      finalUrl:
+        response.url || url,
+
       contentType,
 
-      title: extractTag(html, "title"),
+      title:
+        extractTag(
+          html,
+          "title"
+        ),
 
       metaDescription:
-        extractMetaDescription(html),
+        extractMetaDescription(
+          html
+        ),
 
-      h1Count: extractH1Count(html),
+      h1Count:
+        extractH1Count(html),
 
-      canonical: extractCanonical(html),
+      canonical:
+        extractCanonical(html),
 
-      robots: extractRobots(html),
+      robots:
+        extractRobots(html),
 
-      wordCount: text
-        ? text.split(/\s+/).filter(Boolean).length
-        : 0,
+      wordCount:
+        text
+          ? text
+              .split(/\s+/)
+              .filter(Boolean)
+              .length
+          : 0,
 
-      internalLinks: internalLinks.length,
+      internalLinks:
+        internalLinks.length,
 
       externalLinks,
 
@@ -326,13 +393,17 @@ export async function crawlWebsite(
     )
   );
 
-  const rootUrl = new URL(startUrl);
+  const rootUrl =
+    new URL(startUrl);
 
   const queue: string[] = [
-    normalizeUrl(rootUrl.toString()),
+    normalizeUrl(
+      rootUrl.toString()
+    ),
   ];
 
-  const visited = new Set<string>();
+  const visited =
+    new Set<string>();
 
   const pages: PageAudit[] = [];
 
@@ -342,13 +413,16 @@ export async function crawlWebsite(
     queue.length > 0 &&
     pages.length < maxPages
   ) {
-    const currentUrl = queue.shift();
+    const currentUrl =
+      queue.shift();
 
     if (!currentUrl) {
       break;
     }
 
-    if (visited.has(currentUrl)) {
+    if (
+      visited.has(currentUrl)
+    ) {
       continue;
     }
 
@@ -357,93 +431,194 @@ export async function crawlWebsite(
     let parsedUrl: URL;
 
     try {
-      parsedUrl = new URL(currentUrl);
+      parsedUrl =
+        new URL(currentUrl);
     } catch {
       continue;
     }
 
-    if (!sameOrigin(rootUrl, parsedUrl)) {
+    if (
+      !sameOrigin(
+        rootUrl,
+        parsedUrl
+      )
+    ) {
       continue;
     }
 
     try {
-      const result = await fetchPage(
-        currentUrl,
-        timeoutMs
+      const result =
+        await fetchPage(
+          currentUrl,
+          timeoutMs
+        );
+
+      result.page.depth =
+        getDepth(
+          rootUrl,
+          parsedUrl
+        );
+
+      pages.push(
+        result.page
       );
 
-      result.page.depth = getDepth(
-        rootUrl,
-        parsedUrl
-      );
-
-      pages.push(result.page);
-
-     if (
-  result.page.status !== null &&
-  result.page.status >= 400
-) {
-  issues.push({
-    severity: "high",
-    code: "HTTP_ERROR",
-    title: "HTTP error detected",
-    detail:
-      `The page returned HTTP status ${result.page.status}.`,
-    url: currentUrl,
-  });
-}
+      /*
+       * HTTP ERROR
+       */
+      if (
+        result.page.status !==
+          null &&
+        result.page.status >= 400
+      ) {
+        issues.push({
           severity: "high",
+
           code: "HTTP_ERROR",
-          title: "HTTP error detected",
+
+          title:
+            "HTTP error detected",
+
           detail:
             `The page returned HTTP status ${result.page.status}.`,
+
           url: currentUrl,
         });
       }
 
-      if (!result.page.title) {
+      /*
+       * MISSING TITLE
+       */
+      if (
+        !result.page.title
+      ) {
         issues.push({
           severity: "medium",
+
           code: "MISSING_TITLE",
-          title: "Missing page title",
+
+          title:
+            "Missing page title",
+
           detail:
             "This page does not contain a usable HTML title.",
+
           url: currentUrl,
         });
       }
 
-      if (!result.page.metaDescription) {
+      /*
+       * MISSING META DESCRIPTION
+       */
+      if (
+        !result.page
+          .metaDescription
+      ) {
         issues.push({
           severity: "low",
-          code: "MISSING_META_DESCRIPTION",
-          title: "Missing meta description",
+
+          code:
+            "MISSING_META_DESCRIPTION",
+
+          title:
+            "Missing meta description",
+
           detail:
             "This page does not contain a meta description.",
+
           url: currentUrl,
         });
       }
 
-      if (result.page.h1Count === 0) {
+      /*
+       * MISSING H1
+       */
+      if (
+        result.page.h1Count === 0
+      ) {
         issues.push({
           severity: "medium",
+
           code: "MISSING_H1",
-          title: "Missing H1 heading",
+
+          title:
+            "Missing H1 heading",
+
           detail:
             "This page does not contain an H1 heading.",
+
           url: currentUrl,
         });
       }
 
-      for (const link of result.links) {
-        if (visited.has(link)) {
+      /*
+       * MISSING CANONICAL
+       */
+      if (
+        !result.page.canonical
+      ) {
+        issues.push({
+          severity: "low",
+
+          code:
+            "MISSING_CANONICAL",
+
+          title:
+            "Missing canonical URL",
+
+          detail:
+            "This page does not contain a canonical URL.",
+
+          url: currentUrl,
+        });
+      }
+
+      /*
+       * NOINDEX
+       */
+      if (
+        result.page.robots
+          .toLowerCase()
+          .includes("noindex")
+      ) {
+        issues.push({
+          severity: "medium",
+
+          code:
+            "NOINDEX_DETECTED",
+
+          title:
+            "Noindex directive detected",
+
+          detail:
+            "This page contains a robots noindex directive.",
+
+          url: currentUrl,
+        });
+      }
+
+      /*
+       * INTERNAL LINKS
+       */
+      for (
+        const link of result.links
+      ) {
+        if (
+          visited.has(link)
+        ) {
           continue;
         }
 
-        if (queue.includes(link)) {
+        if (
+          queue.includes(link)
+        ) {
           continue;
         }
 
-        if (queue.length >= maxPages * 2) {
+        if (
+          queue.length >=
+          maxPages * 2
+        ) {
           break;
         }
 
@@ -457,30 +632,52 @@ export async function crawlWebsite(
 
       pages.push({
         url: currentUrl,
+
         status: null,
-        finalUrl: currentUrl,
+
+        finalUrl:
+          currentUrl,
+
         contentType: "",
+
         title: "",
+
         metaDescription: "",
+
         h1Count: 0,
+
         canonical: "",
+
         robots: "",
+
         wordCount: 0,
+
         internalLinks: 0,
+
         externalLinks: 0,
-        depth: getDepth(
-          rootUrl,
-          parsedUrl
-        ),
-        error: message,
+
+        depth:
+          getDepth(
+            rootUrl,
+            parsedUrl
+          ),
+
+        error:
+          message,
       });
 
       issues.push({
         severity: "high",
-        code: "PAGE_FETCH_FAILED",
-        title: "Page could not be analyzed",
+
+        code:
+          "PAGE_FETCH_FAILED",
+
+        title:
+          "Page could not be analyzed",
+
         detail:
           "The crawler could not retrieve this page.",
+
         url: currentUrl,
       });
     }
