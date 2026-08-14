@@ -230,6 +230,7 @@ export function sortAuditIssues(
     high: 3,
     medium: 2,
     low: 1,
+    info: 0,
   };
 
   return [...issues].sort(
