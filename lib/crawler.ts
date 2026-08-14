@@ -379,10 +379,19 @@ export async function crawlWebsite(
 
       pages.push(result.page);
 
-      if (
+     if (
   result.page.status !== null &&
   result.page.status >= 400
 ) {
+  issues.push({
+    severity: "high",
+    code: "HTTP_ERROR",
+    title: "HTTP error detected",
+    detail:
+      `The page returned HTTP status ${result.page.status}.`,
+    url: currentUrl,
+  });
+}
           severity: "high",
           code: "HTTP_ERROR",
           title: "HTTP error detected",
