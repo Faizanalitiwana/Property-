@@ -54,15 +54,15 @@ export async function POST(
     }
 
     const maxPages =
-      typeof body.maxPages === "number"
-        ? Math.max(
-            1,
-            Math.min(
-              Math.floor(body.maxPages),
-              100
-            )
-          )
-        : 25;
+  typeof body.maxPages === "number"
+    ? Math.max(
+        1,
+        Math.min(
+          Math.floor(body.maxPages),
+          150
+        )
+      )
+    : 150;
 
     const audit =
       await runAudit(
