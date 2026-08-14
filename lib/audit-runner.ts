@@ -13,6 +13,7 @@ export type AuditFetchResult = {
   url: string;
   finalUrl: string;
   status: number | null;
+  contentType: string;
   html: string;
 };
 
@@ -24,6 +25,11 @@ export type AuditRunnerOptions = {
 export type AuditRunnerResult = AggregatedAudit & {
   startedAt: string;
   completedAt: string;
+};
+
+type CrawlQueueItem = {
+  url: string;
+  depth: number;
 };
 
 const DEFAULT_MAX_PAGES = 25;
@@ -76,7 +82,9 @@ async function fetchPage(
 
   const html =
     contentType.includes("text/html") ||
-    contentType.includes("application/xhtml+xml")
+    contentType.includes(
+      "application/xhtml+xml"
+    )
       ? await response.text()
       : "";
 
@@ -84,12 +92,14 @@ async function fetchPage(
     url,
     finalUrl,
     status: response.status,
+    contentType,
     html,
   };
 }
 
 function createAuditPage(
-  fetched: AuditFetchResult
+  fetched: AuditFetchResult,
+  depth: number
 ): AuditPageResult {
   const page = parseHtml(
     fetched.html,
@@ -124,17 +134,40 @@ function createAuditPage(
       url: fetched.url,
       finalUrl: fetched.finalUrl,
       status: fetched.status,
+      contentType:
+        fetched.contentType,
+
       title: page.title,
-      wordCount: page.wordCount,
+
+      metaDescription:
+        page.metaDescription,
+
+      h1Count:
+        page.h1Count,
+
+      canonical:
+        page.canonical,
+
+      robots:
+        page.robots,
+
+      wordCount:
+        page.wordCount,
+
       internalLinks,
+
       externalLinks,
+
+      depth,
     },
+
     technical,
   };
 }
 
 function createFailedPage(
-  fetched: AuditFetchResult
+  fetched: AuditFetchResult,
+  depth: number
 ): AuditPageResult {
   const page = parseHtml(
     "",
@@ -159,11 +192,29 @@ function createFailedPage(
       url: fetched.url,
       finalUrl: fetched.finalUrl,
       status: fetched.status,
+
+      contentType:
+        fetched.contentType,
+
       title: "",
+
+      metaDescription: "",
+
+      h1Count: 0,
+
+      canonical: "",
+
+      robots: "",
+
       wordCount: 0,
+
       internalLinks: 0,
+
       externalLinks: 0,
+
+      depth,
     },
+
     technical,
   };
 }
@@ -184,8 +235,11 @@ export async function runAudit(
     )
   );
 
-  const queue: string[] = [
-    normalizeUrl(startUrl),
+  const queue: CrawlQueueItem[] = [
+    {
+      url: normalizeUrl(startUrl),
+      depth: 0,
+    },
   ];
 
   const visited = new Set<string>();
@@ -203,15 +257,17 @@ export async function runAudit(
       );
     }
 
-    const currentUrl =
+    const current =
       queue.shift();
 
-    if (!currentUrl) {
+    if (!current) {
       continue;
     }
 
     const normalized =
-      normalizeUrl(currentUrl);
+      normalizeUrl(
+        current.url
+      );
 
     if (visited.has(normalized)) {
       continue;
@@ -233,14 +289,21 @@ export async function runAudit(
         url: normalized,
         finalUrl: normalized,
         status: null,
+        contentType: "",
         html: "",
       };
     }
 
     const result =
       fetched.html
-        ? createAuditPage(fetched)
-        : createFailedPage(fetched);
+        ? createAuditPage(
+            fetched,
+            current.depth
+          )
+        : createFailedPage(
+            fetched,
+            current.depth
+          );
 
     results.push(result);
 
@@ -267,13 +330,28 @@ export async function runAudit(
         normalizeUrl(link.url);
 
       if (
-        !visited.has(linkUrl) &&
-        !queue.includes(linkUrl) &&
-        visited.size + queue.length <
-          maxPages
+        visited.has(linkUrl) ||
+        queue.some(
+          (item) =>
+            item.url === linkUrl
+        )
       ) {
-        queue.push(linkUrl);
+        continue;
       }
+
+      if (
+        visited.size +
+          queue.length >=
+        maxPages
+      ) {
+        continue;
+      }
+
+      queue.push({
+        url: linkUrl,
+        depth:
+          current.depth + 1,
+      });
     }
   }
 
